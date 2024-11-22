@@ -2,23 +2,31 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.8  # Match your Lambda runtime
+      python: 3.8
     commands:
       - echo Installing necessary tools...
       - pip install --upgrade pip
   build:
     commands:
       - echo Packaging Lambda functions...
+      - mkdir -p build
       - |
         for dir in lambda_function/function*; do
+          echo Processing $dir...
           cd $dir
           if [ -f requirements.txt ]; then
-            pip install -r requirements.txt -t .  # Install dependencies
+            echo Installing dependencies for $(basename $dir)...
+            pip install -r requirements.txt -t .
           fi
-          zip -r ../../$(basename $dir).zip .  # Package into a ZIP
+          echo Creating ZIP package for $(basename $dir)...
+          zip -r ../../build/$(basename $dir).zip .
           cd ../..
         done
+  post_build:
+    commands:
+      - echo Uploading artifacts to S3...
+      - aws s3 cp build/ s3://artifact1/build-output/ --recursive
 artifacts:
   files:
-    - function1.zip
-    - function2.zip
+    - build/*.zip
+
