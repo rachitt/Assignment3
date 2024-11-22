@@ -1,0 +1,25 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.8  # Ensure this matches your Lambda runtime
+    commands:
+      - echo Installing necessary tools
+      - pip install --upgrade pip
+  build:
+    commands:
+      - echo Building and packaging Lambda functions
+      - |
+        for dir in function*; do
+          echo Packaging $dir
+          cd $dir
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt -t .  # Install dependencies locally
+          fi
+          zip -r ../$dir.zip .  # Package the function code and dependencies
+          cd ..
+        done
+artifacts:
+  files:
+    - function1.zip
+    - function2.zip
