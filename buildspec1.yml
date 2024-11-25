@@ -3,18 +3,19 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 16
+      nodejs: 16  # Ensure Node.js version is compatible with your React setup
     commands:
       - echo "Installing dependencies..."
+      - cd frontend
       - npm install
   build:
     commands:
-      - echo "Building the frontend code..."
+      - echo "Building the React app..."
       - npm run build
   post_build:
     commands:
-      - echo "Build completed."
+      - echo "Build completed. Artifacts are ready for deployment."
 artifacts:
   files:
     - '**/*'
-  base-directory: build
+  base-directory: frontend/build
